@@ -55,3 +55,7 @@ int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   // TODO: implement to_array
   return 0;
 }
+
+void check_tree(const rbtree *t) {
+  // TODO: RB트리의 속성 몇번을 위반하는지 체크하고, 리턴해주는 함수
+}
