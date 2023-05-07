@@ -5,10 +5,11 @@
 #include <stdlib.h>
 
 int main() {
-    rbtree *testTree = new_rbtree();
-    *rbtree_insert(testTree, 100);
-    printf("%d\n", testTree->root->key);
-    
+    rbtree *test_tree = new_rbtree();
+    *rbtree_insert(test_tree, 100);
+    printf("%d\n", test_tree->root->key);
+    printf("%d\n", test_tree->root->color);
+
     return 0;
 }
 
