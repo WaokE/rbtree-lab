@@ -18,7 +18,7 @@ typedef struct node_t {
   struct node_t *parent, *left, *right;
 } node_t;
 
-// sentinel 노드를 위한 구조체 선언부
+// rbtree 메인 구조체 선언부
 typedef struct {
   node_t *root;
   node_t *nil;  // for sentinel
