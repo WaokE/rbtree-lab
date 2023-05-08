@@ -137,6 +137,28 @@ void rotate_left(rbtree *t, node_t *x){
   x->parent = y;
 }
 
+void rotate_right(rbtree *t, node_t *y){
+  node_t *x = y->left;
+  y->left = x->right;
+  if (x->right != t->nil){
+    x->right->parent = y;
+  }
+  x->parent = y->parent;
+  if (t->root == y){
+    t->root = x;
+  }
+  // y가 부모의 왼쪽이면
+  else if (y == y->parent->left){
+    y->parent->left = x;
+  }
+  // y가 부모의 오른쪽이면
+  else{
+    y->parent->right = x;
+  }
+  x->right = y;
+  y->parent = x;
+}
+
 node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find
   return t->root;
@@ -162,6 +184,11 @@ int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   return 0;
 }
 
-void check_tree(const rbtree *t) {
-  // TODO: RB트리의 속성 몇번을 위반하는지 체크하고, 리턴해주는 함수
+
+void print_rbtree(const rbtree *t){
+  node_t *current = t->root;
+  while (current->key != NULL){
+    printf("%d", current->key);
+    current = current->left
+  }
 }
