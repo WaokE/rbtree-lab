@@ -48,14 +48,20 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
     if (parent->key == node_to_insert->key){
       parent->right = node_to_insert;
       node_to_insert->parent = parent;
+      node_to_insert->right = t->nil;
+      node_to_insert->left = t->nil;
     }
     else if (parent->key > node_to_insert->key){
       parent->left = node_to_insert;
       node_to_insert->parent = parent;
+      node_to_insert->right = t->nil;
+      node_to_insert->left = t->nil;
     }
     else if (parent->key < node_to_insert->key){
       parent->right = node_to_insert;
       node_to_insert->parent = parent;
+      node_to_insert->right = t->nil;
+      node_to_insert->left = t->nil;
     }
   }
 }
