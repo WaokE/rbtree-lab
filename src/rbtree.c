@@ -12,19 +12,57 @@ rbtree* new_rbtree(void) {
 
 void delete_rbtree(rbtree* t) {
 	// TODO: reclaim the tree nodes's memory: RBtree 구조체가 차지했던 메모리 반환
-	if (p != NULL) {
-		delete_one(t, t->root);
-		free(t->nil);
-		free(t);
-	}
+	delete_one(t, t->root);
+	free(t->nil);
+	free(t);
 }
 
 void delete_one(rbtree* t, node_t* cur) {
-	if (cur != nil) {
+	if (cur != t->nil) {
 		delete_one(t, cur->left);
 		delete_one(t, cur->right);
 		free(cur);
 	}
+}
+
+void rotate_left(rbtree *t, node_t *x){
+	node_t *y = x->right;
+	x->right = y->left; //y의 왼쪽의 서버트리를 x의 오른쪽 서버트리로 옮김
+	if (y->left != t->nil){
+		y->left->parent = x;
+	}
+	y -> parent = x ->parent;
+	if (x-> parent == t->nil){ //x가 루트노드라면
+		t->root = y;
+	}
+	else if (x == x->parent->left){ //x가 왼쪽 자식일 경우
+		x->parent->left = y;
+	}
+	else {
+		x->parent->right = y;
+	}
+	y->left = x;
+	x->parent = y;
+}
+
+void rotate_right(rbtree *t, node_t *x){
+	node_t *y = x->left;
+	x->left = y->right; //y의 오른쪽 서버트리를 x의 왼쪽 서버트리로 옮김
+	if (y->right != t->nil){
+		y->right->parent = x;
+	}
+	y -> parent = x ->parent;
+	if (x-> parent == t->nil){ //x가 루트노드라면
+		t->root = y;
+	}
+	else if (x == x->parent->right){
+		x->parent->right = y;
+	}
+	else {
+		x->parent->left = y;
+	}
+	y->right = x;
+	x->parent = y;
 }
 
 node_t *rbtree_insert(rbtree *t, const key_t key) {
