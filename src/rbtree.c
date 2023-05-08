@@ -53,58 +53,60 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
       node_to_insert->parent = parent;
       node_to_insert->right = t->nil;
       node_to_insert->left = t->nil;
-      insert_fixup(node_to_insert);
+      insert_fixup(t, node_to_insert);
     }
     else if (parent->key > node_to_insert->key){
       parent->left = node_to_insert;
       node_to_insert->parent = parent;
       node_to_insert->right = t->nil;
       node_to_insert->left = t->nil;
-      insert_fixup(node_to_insert);
+      insert_fixup(t, node_to_insert);
     }
     else if (parent->key < node_to_insert->key){
       parent->right = node_to_insert;
       node_to_insert->parent = parent;
       node_to_insert->right = t->nil;
       node_to_insert->left = t->nil;
-      insert_fixup(node_to_insert);
+      insert_fixup(t, node_to_insert);
     }
   }
 }
 
-void insert_fixup(node_t *node_inserted){
+void insert_fixup(rbtree *t, node_t *node_inserted){
+  node_t *grandparent = node_inserted->parent->parent;
+  node_t *parent = node_inserted->parent;
   // 삽입 노드 부모 색이 BLACK -> 문제 X
-  if (node_inserted->parent->color = RBTREE_BLACK){
+  if (parent->color = RBTREE_BLACK){
     return;
   }
   // 삽입 노드 부모 색이 RED -> 문제 발생
   else{
     // 삼촌 노드 찾기
     node_t *node_uncle;
-    if (node_inserted->parent->parent->left == node_inserted->parent){
-      node_uncle = node_inserted->parent->parent->right;
+    if (grandparent->left == parent){
+      node_uncle = grandparent->right;
     }
     else{
-      node_uncle = node_inserted->parent->parent->left;
+      node_uncle = grandparent->left;
     }
     // Case 1
     if (node_uncle->color == RBTREE_RED){
-      node_inserted->parent->color = RBTREE_BLACK;
+      parent->color = RBTREE_BLACK;
       node_uncle->color = RBTREE_BLACK;
-      node_inserted->parent->parent->color = RBTREE_RED;
-      insert_fixup(node_inserted->parent->parent);
+      grandparent->color = RBTREE_RED;
+      insert_fixup(t, grandparent);
     }
     // Case 2, 3
     else {
-      node_t *grandparent = node_inserted->parent->parent;
-      node_t *parent = node_inserted->parent;
       // Case 2-1 (오른쪽으로 꺾임)
       if (parent->left == node_inserted && grandparent->right == parent){
         // TODO: 부모 기준으로 오른쪽으로 회전 - Case 3로 만들어줌
+        rotate_right(t, parent);
       }
       // Case 2-2 (왼쪽으로 꺾임)
       else if (parent->left == node_inserted && grandparent->right == parent){
         // TODO: 부모 기준으로 왼쪽으로 회전 - Case 3 로 만들어줌
+        rotate_left(t, parent);
       }
       // Case 3
       color_t temp_color = parent->color;
