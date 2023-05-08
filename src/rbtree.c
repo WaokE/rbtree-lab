@@ -19,6 +19,7 @@ void delete_rbtree(rbtree *t) {
 
 node_t *rbtree_insert(rbtree *t, const key_t key) {
   // TODO: implement insert
+  // 삽입할 노드 선언
   node_t *node_to_insert = (node_t *)calloc(1, sizeof(node_t));
   node_to_insert->color = RBTREE_RED;
   node_to_insert->key = key;
@@ -42,6 +43,8 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
   // 부모를 찾지 못했다면(루트노드 삽입시)
   if (parent == t->nil){
     t->root = node_to_insert;
+    // 2번 속성 만족을 위해 루트 BLACK으로
+    node_to_insert->color = RBTREE_BLACK;
   }
   // 찾았다면
   else{
@@ -50,18 +53,21 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
       node_to_insert->parent = parent;
       node_to_insert->right = t->nil;
       node_to_insert->left = t->nil;
+      insert_fixup(node_to_insert);
     }
     else if (parent->key > node_to_insert->key){
       parent->left = node_to_insert;
       node_to_insert->parent = parent;
       node_to_insert->right = t->nil;
       node_to_insert->left = t->nil;
+      insert_fixup(node_to_insert);
     }
     else if (parent->key < node_to_insert->key){
       parent->right = node_to_insert;
       node_to_insert->parent = parent;
       node_to_insert->right = t->nil;
       node_to_insert->left = t->nil;
+      insert_fixup(node_to_insert);
     }
   }
 }
@@ -107,7 +113,28 @@ void insert_fixup(node_t *node_inserted){
       // TODO: 할아버지 기준으로 왼/오 회전
     }
   }
+}
 
+void rotate_left(rbtree *t, node_t *x){
+  node_t *y = x->right;
+  x->right = y->left;
+  if (y->left != t->nil){
+    y->left->parent = x;
+  }
+  y->parent = x->parent;
+  if (t->root == x){
+    t->root = y;
+  }
+  // x가 부모의 왼쪽이면
+  else if (x == x->parent->left){
+    x->parent->left = y;
+  }
+  // x가 부모의 오른쪽이면
+  else{
+    x->parent->right = y;
+  }
+  y->left = x;
+  x->parent = y;
 }
 
 node_t *rbtree_find(const rbtree *t, const key_t key) {
