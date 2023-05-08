@@ -69,7 +69,18 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
 
 node_t* rbtree_find(const rbtree* t, const key_t key) {
 	// TODO: implement find
-	return t->root;
+	//  RB tree내에 해당 key가 있는지 탐색하여 있으면 해당 노드 반환.
+	node_t *tmp = t->root;
+	if (tmp != NULL){
+		while (tmp != NULL & tmp -> key != key){
+			if (tmp->key > key){ //tmp가 가리키는 key값이 찾아야 할 key값보다 크면, tmp를 줄여서 key값에 가깝게해야 함.
+				tmp = tmp->left;
+			} else {
+				tmp = tmp->right;
+			}
+		}
+		return tmp; //tmp->key == key라면 바로 tmp 반환
+	} return NULL;
 }
 
 node_t* rbtree_min(const rbtree* t) {
@@ -102,8 +113,4 @@ int rbtree_erase(rbtree* t, node_t* p) {
 int rbtree_to_array(const rbtree* t, key_t* arr, const size_t n) {
 	// TODO: implement to_array
 	return 0;
-}
-
-void check_tree(const rbtree *t) {
-  // TODO: RB트리의 속성 몇번을 위반하는지 체크하고, 리턴해주는 함수
 }
