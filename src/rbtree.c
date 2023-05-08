@@ -5,116 +5,11 @@
 rbtree *new_rbtree(void) {
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
   node_t *nil_node = (node_t *)calloc(1, sizeof(node_t));
-  nil_node->key = NULL;
+  nil_node->key = 0;
   // TODO: initialize struct if needed
-  p->root = nil_node;
+  p->root = NULL;
   p->nil = nil_node;
   return p;
-}
-
-void delete_rbtree(rbtree *t) {
-  // TODO: reclaim the tree nodes's memory
-  free(t);
-}
-
-node_t *rbtree_insert(rbtree *t, const key_t key) {
-  // TODO: implement insert
-  // 삽입할 노드 선언
-  node_t *node_to_insert = (node_t *)calloc(1, sizeof(node_t));
-  node_to_insert->color = RBTREE_RED;
-  node_to_insert->key = key;
-  
-  // 노드를 삽입할 부모 탐색
-  node_t *current = t->root;
-  node_t *parent = t->nil;
-  while (current != t->nil){
-    parent = current;
-    if (current->key == key){
-      current = current->right;
-    }
-    else if (current->key > key){
-      current = current->left; 
-    }
-    else if (current->key < key){
-      current = current->right; 
-    }
-  }
-
-  // 부모를 찾지 못했다면(루트노드 삽입시)
-  if (parent == t->nil){
-    t->root = node_to_insert;
-    // 2번 속성 만족을 위해 루트 BLACK으로
-    node_to_insert->color = RBTREE_BLACK;
-  }
-  // 찾았다면
-  else{
-    if (parent->key == node_to_insert->key){
-      parent->right = node_to_insert;
-      node_to_insert->parent = parent;
-      node_to_insert->right = t->nil;
-      node_to_insert->left = t->nil;
-      insert_fixup(t, node_to_insert);
-    }
-    else if (parent->key > node_to_insert->key){
-      parent->left = node_to_insert;
-      node_to_insert->parent = parent;
-      node_to_insert->right = t->nil;
-      node_to_insert->left = t->nil;
-      insert_fixup(t, node_to_insert);
-    }
-    else if (parent->key < node_to_insert->key){
-      parent->right = node_to_insert;
-      node_to_insert->parent = parent;
-      node_to_insert->right = t->nil;
-      node_to_insert->left = t->nil;
-      insert_fixup(t, node_to_insert);
-    }
-  }
-}
-
-void insert_fixup(rbtree *t, node_t *node_inserted){
-  node_t *grandparent = node_inserted->parent->parent;
-  node_t *parent = node_inserted->parent;
-  // 삽입 노드 부모 색이 BLACK -> 문제 X
-  if (parent->color = RBTREE_BLACK){
-    return;
-  }
-  // 삽입 노드 부모 색이 RED -> 문제 발생
-  else{
-    // 삼촌 노드 찾기
-    node_t *node_uncle;
-    if (grandparent->left == parent){
-      node_uncle = grandparent->right;
-    }
-    else{
-      node_uncle = grandparent->left;
-    }
-    // Case 1
-    if (node_uncle->color == RBTREE_RED){
-      parent->color = RBTREE_BLACK;
-      node_uncle->color = RBTREE_BLACK;
-      grandparent->color = RBTREE_RED;
-      insert_fixup(t, grandparent);
-    }
-    // Case 2, 3
-    else {
-      // Case 2-1 (오른쪽으로 꺾임)
-      if (parent->left == node_inserted && grandparent->right == parent){
-        // TODO: 부모 기준으로 오른쪽으로 회전 - Case 3로 만들어줌
-        rotate_right(t, parent);
-      }
-      // Case 2-2 (왼쪽으로 꺾임)
-      else if (parent->left == node_inserted && grandparent->right == parent){
-        // TODO: 부모 기준으로 왼쪽으로 회전 - Case 3 로 만들어줌
-        rotate_left(t, parent);
-      }
-      // Case 3
-      color_t temp_color = parent->color;
-      parent->color = grandparent->color;
-      grandparent->color = temp_color;
-      // TODO: 할아버지 기준으로 왼/오 회전
-    }
-  }
 }
 
 void rotate_left(rbtree *t, node_t *x){
@@ -161,6 +56,121 @@ void rotate_right(rbtree *t, node_t *y){
   y->parent = x;
 }
 
+void delete_rbtree(rbtree *t) {
+  // TODO: reclaim the tree nodes's memory
+  free(t);
+}
+
+void insert_fixup(rbtree *t, node_t *node_inserted){
+  node_t *grandparent = node_inserted->parent->parent;
+  node_t *parent = node_inserted->parent;
+  // 삽입 노드 부모 색이 BLACK -> 문제 X
+  if (parent->color == RBTREE_BLACK){
+    return;
+  }
+  // 삽입 노드 부모 색이 RED -> 문제 발생
+  else{
+    // 삼촌 노드 찾기
+    node_t *node_uncle;
+    if (grandparent->left == parent){
+      node_uncle = grandparent->right;
+    }
+    else{
+      node_uncle = grandparent->left;
+    }
+    // Case 1
+    if (node_uncle->color == RBTREE_RED){
+      parent->color = RBTREE_BLACK;
+      node_uncle->color = RBTREE_BLACK;
+      grandparent->color = RBTREE_RED;
+      insert_fixup(t, grandparent);
+    }
+    // Case 2, 3
+    else {
+      // Case 2-1 (오른쪽으로 꺾임)
+      if (parent->left == node_inserted && grandparent->right == parent){
+        // TODO: 부모 기준으로 오른쪽으로 회전 - Case 3로 만들어줌
+        rotate_right(t, parent);
+      }
+      // Case 2-2 (왼쪽으로 꺾임)
+      else if (parent->left == node_inserted && grandparent->right == parent){
+        // TODO: 부모 기준으로 왼쪽으로 회전 - Case 3 로 만들어줌
+        rotate_left(t, parent);
+      }
+      // Case 3
+      color_t temp_color = parent->color;
+      parent->color = grandparent->color;
+      grandparent->color = temp_color;
+      // TODO: 할아버지 기준으로 왼/오 회전
+      // if (grandparent->left == parent){
+      //   rotate
+      // }
+      // else{
+
+      // }
+    }
+  }
+}
+
+node_t *rbtree_insert(rbtree *t, const key_t key) {
+  // TODO: implement insert
+  // 삽입할 노드 선언
+  node_t *node_to_insert = (node_t *)calloc(1, sizeof(node_t));
+  node_to_insert->color = RBTREE_RED;
+  node_to_insert->key = key;
+  
+  // 노드를 삽입할 부모 탐색
+  node_t *current = t->root;
+  node_t *parent = t->nil;
+  while (current != NULL){
+    parent = current;
+    if (current->key == key){
+      current = current->right;
+    }
+    else if (current->key > key){
+      current = current->left; 
+    }
+    else if (current->key < key){
+      current = current->right; 
+    }
+  }
+
+  // 부모를 찾지 못했다면(루트노드 삽입시)
+  if (parent == t->nil){
+    t->root = node_to_insert;
+    node_to_insert->parent = t->nil;
+    node_to_insert->left = t->nil;
+    node_to_insert->right = t->nil;
+    // 2번 속성 만족을 위해 루트 BLACK으로
+    node_to_insert->color = RBTREE_BLACK;
+  }
+  // 찾았다면
+  else{
+    if (parent->key == node_to_insert->key){
+      parent->right = node_to_insert;
+      node_to_insert->parent = parent;
+      node_to_insert->right = t->nil;
+      node_to_insert->left = t->nil;
+      insert_fixup(t, node_to_insert);
+    }
+    else if (parent->key > node_to_insert->key){
+      parent->left = node_to_insert;
+      node_to_insert->parent = parent;
+      node_to_insert->right = t->nil;
+      node_to_insert->left = t->nil;
+      insert_fixup(t, node_to_insert);
+    }
+    else if (parent->key < node_to_insert->key){
+      parent->right = node_to_insert;
+      node_to_insert->parent = parent;
+      node_to_insert->right = t->nil;
+      node_to_insert->left = t->nil;
+      insert_fixup(t, node_to_insert);
+    }
+  }
+  return node_to_insert;
+}
+
 node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find
   return t->root;
@@ -184,13 +194,4 @@ int rbtree_erase(rbtree *t, node_t *p) {
 int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   // TODO: implement to_array
   return 0;
-}
-
-
-void print_rbtree(const rbtree *t){
-  node_t *current = t->root;
-  while (current->key != NULL){
-    printf("%d", current->key);
-    current = current->left
-  }
 }
