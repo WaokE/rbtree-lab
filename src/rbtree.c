@@ -39,7 +39,7 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
     }
   }
 
-  // 부모를 찾지 못했다면
+  // 부모를 찾지 못했다면(루트노드 삽입시)
   if (parent == t->nil){
     t->root = node_to_insert;
   }
@@ -47,17 +47,60 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
   else{
     if (parent->key == node_to_insert->key){
       parent->right = node_to_insert;
+      node_to_insert->parent = parent;
     }
     else if (parent->key > node_to_insert->key){
       parent->left = node_to_insert;
+      node_to_insert->parent = parent;
     }
     else if (parent->key < node_to_insert->key){
       parent->right = node_to_insert;
+      node_to_insert->parent = parent;
     }
   }
 }
 
-void insert_fixup(node_t *node){
+void insert_fixup(node_t *node_inserted){
+  // 삽입 노드 부모 색이 BLACK -> 문제 X
+  if (node_inserted->parent->color = RBTREE_BLACK){
+    return;
+  }
+  // 삽입 노드 부모 색이 RED -> 문제 발생
+  else{
+    // 삼촌 노드 찾기
+    node_t *node_uncle;
+    if (node_inserted->parent->parent->left == node_inserted->parent){
+      node_uncle = node_inserted->parent->parent->right;
+    }
+    else{
+      node_uncle = node_inserted->parent->parent->left;
+    }
+    // Case 1
+    if (node_uncle->color == RBTREE_RED){
+      node_inserted->parent->color = RBTREE_BLACK;
+      node_uncle->color = RBTREE_BLACK;
+      node_inserted->parent->parent->color = RBTREE_RED;
+      insert_fixup(node_inserted->parent->parent);
+    }
+    // Case 2, 3
+    else {
+      node_t *grandparent = node_inserted->parent->parent;
+      node_t *parent = node_inserted->parent;
+      // Case 2-1 (오른쪽으로 꺾임)
+      if (parent->left == node_inserted && grandparent->right == parent){
+        // TODO: 부모 기준으로 오른쪽으로 회전 - Case 3로 만들어줌
+      }
+      // Case 2-2 (왼쪽으로 꺾임)
+      else if (parent->left == node_inserted && grandparent->right == parent){
+        // TODO: 부모 기준으로 왼쪽으로 회전 - Case 3 로 만들어줌
+      }
+      // Case 3
+      color_t temp_color = parent->color;
+      parent->color = grandparent->color;
+      grandparent->color = temp_color;
+      // TODO: 할아버지 기준으로 왼/오 회전
+    }
+  }
 
 }
 
