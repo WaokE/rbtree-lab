@@ -1,6 +1,7 @@
 #include "rbtree.h"
-
+#include <stdio.h>
 #include <stdlib.h>
+key_t inorder_count;
 
 rbtree *new_rbtree(void) {
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
@@ -83,6 +84,9 @@ void insert_fixup(rbtree *t, node_t *node_inserted){
       parent->color = RBTREE_BLACK;
       node_uncle->color = RBTREE_BLACK;
       grandparent->color = RBTREE_RED;
+      if (t->root == grandparent){
+        t->root->color = RBTREE_BLACK;
+      }
       insert_fixup(t, grandparent);
     }
     // Case 2, 3
@@ -184,7 +188,25 @@ int rbtree_erase(rbtree *t, node_t *p) {
   return 0;
 }
 
-int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
+void inorder_traversal(rbtree *t, node_t *node, key_t *arr, key_t n){
+  if (inorder_count >= n){
+    return;
+  }
+  if (node->left){
+    inorder_traversal(t, node->left, arr, n);
+  }
+  if (node != t->nil){
+    arr[inorder_count] = node->key;
+    inorder_count++;
+    }
+  if (node->right){
+    inorder_traversal(t, node->right, arr, n);
+  }
+} 
+
+key_t rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   // TODO: implement to_array
+  inorder_count = 0;
+  inorder_traversal(t, t->root, arr, n);
   return 0;
 }
