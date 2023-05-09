@@ -5,7 +5,7 @@
 rbtree* new_rbtree(void) {
 	rbtree* p = (rbtree*)calloc(1, sizeof(rbtree));
 	// TODO: initialize struct if needed
-	p->nil = (node_t*)calloc(1, sizeof(node_t));
+	p->nil = (node_t*)calloc(1, sizeof(node_t)); //노드에 메모리 넣어줌.
 	p->nil->color = RBTREE_BLACK;
 	p->root = p->nil;
 	return p;
@@ -177,8 +177,23 @@ node_t* rbtree_max(const rbtree* t) {
 	return tmp;
 }
 
-int rbtree_erase(rbtree* t, node_t* p) {
+void transplant(rbtree *t, node_t *u, node_t *v){
+	// RBtree 특성을 위반할 수 있는 노드를 관리하기 위해. 노드u를 노드v로 교체하는 함수.
+	if (u->parent == t->nil){ //u가 루트로드라면
+		t->root = v;
+	} else if (u == u->parent->left){
+		u->parent->left = v;
+	} else {
+		u->parent->right = v;
+	}
+	v->parent = u->parent;
+}
+
+int rbtree_erase(rbtree* t, node_t* z) {
 	// TODO: implement erase: 특정 노드 삭제 작업
+	node_t * y = z;
+	y-> color;
+
 	return 0;
 }
 
