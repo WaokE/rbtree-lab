@@ -346,7 +346,7 @@ int rbtree_erase(rbtree *t, node_t *p) {
   return 0;
 }
 
-void inorder_traversal(rbtree *t, node_t *node, key_t *arr, key_t n){
+void inorder_traversal(const rbtree *t, node_t *node, key_t *arr, key_t n){
   if (inorder_count >= n){
     return;
   }
